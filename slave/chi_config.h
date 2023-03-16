@@ -99,3 +99,37 @@ namespace RSPConfig
             TraceTag_Width,
     };
 }
+
+
+namespace SNPConfig
+{
+    enum
+    {
+        QoS_Width           = 4,
+        SrcID_Width         = 11,
+        TxnID_Width         = 12,
+        FwdNID_Width        = 11,
+        FwdTxnID_Width      = 12,
+        Opcode_Width        = 5,
+        Addr_Width          = 41,
+        NS_Width            = 1,
+        DoNotGoToSD_Width   = 1,
+        RetToSrc_Width      = 1,
+        TraceTag_Width      = 1,
+
+        Total_Width = 
+            QoS_Width +
+            SrcID_Width +
+            TxnID_Width +
+            FwdNID_Width +
+            FwdTxnID_Width +
+            Opcode_Width +
+            Addr_Width +
+            NS_Width +
+            DoNotGoToSD_Width +
+            RetToSrc_Width +
+            TraceTag_Width,
+    };
+}
+
+
