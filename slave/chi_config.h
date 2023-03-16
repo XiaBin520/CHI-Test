@@ -133,3 +133,51 @@ namespace SNPConfig
 }
 
 
+namespace DATConfig
+{
+    enum
+    {
+        QoS_Width           = 4,
+        TgtID_Width         = 11,
+        SrcID_Width         = 11,
+        TxnID_Width         = 12,
+        HomeNID_Width       = 11,
+        Opcode_Width        = 4,
+        RespErr_Width       = 2,
+        Resp_Width          = 3,
+        DataPull_Width      = 4,
+        CBusy_Width         = 3,
+        DBID_Width          = 12,
+        CCID_Width          = 2,
+        DataID_Width        = 2,
+        TagOp_Width         = 2,
+
+        Data_Width          = 256,
+        Tag_Width           = Data_Width/32,
+        TU_Width            = Data_Width/128,
+        TraceTag_Width      = 1,
+        BE_Width            = Data_Width/8,
+
+        Total_Width = 
+            QoS_Width +
+            TgtID_Width +
+            SrcID_Width +
+            TxnID_Width +
+            HomeNID_Width +
+            Opcode_Width +
+            RespErr_Width +
+            Resp_Width +
+            DataPull_Width +
+            CBusy_Width +
+            DBID_Width +
+            CCID_Width +
+            DataID_Width +
+            TagOp_Width +
+            Tag_Width +
+            TU_Width +
+            TraceTag_Width +
+            BE_Width +
+            Data_Width,
+    };
+
+}
