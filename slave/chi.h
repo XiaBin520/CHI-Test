@@ -120,8 +120,6 @@ public:
 };
 
 
-
-
 class RSPFlit
 {
 public:
@@ -193,3 +191,71 @@ public:
     }
 };
 
+
+
+class SNPFlit
+{
+public:
+    uint32_t    qos;
+    uint32_t    srcid;
+    uint32_t    txnid;
+    uint32_t    fwdnid;
+    uint32_t    fwdtxnid; // FwdTxnID[11:0], {6’b0,StashLPIDValid, StashLPID[4:0]}, {4’b0,VMIDExt[7:0]}
+    uint32_t    opcode;
+    uint64_t    addr;
+    bool        ns;
+    bool        donotgotosd;
+    bool        rettosrc;
+    bool        tracetag;
+
+
+    queue<bool> flit_bits;
+
+
+    void GetField(uint32_t snpflit[])
+    {
+        while(!flit_bits.empty()) flit_bits.pop();
+
+        uint32_t arr_size = ceil(SNPConfig::Total_Width / 32);
+        for(uint32_t i = 0; i < arr_size; i++)
+        {
+            ValueToBits(snpflit[i], 32, flit_bits);
+        }
+        this->qos           = BitsToValue(flit_bits,    SNPConfig::QoS_Width);
+        this->srcid         = BitsToValue(flit_bits,    SNPConfig::SrcID_Width);
+        this->txnid         = BitsToValue(flit_bits,    SNPConfig::TxnID_Width);
+        this->fwdnid        = BitsToValue(flit_bits,    SNPConfig::FwdNID_Width);
+        this->fwdtxnid      = BitsToValue(flit_bits,    SNPConfig::FwdTxnID_Width);
+        this->opcode        = BitsToValue(flit_bits,    SNPConfig::Opcode_Width);
+        this->addr          = BitsToValue(flit_bits,    SNPConfig::Addr_Width);
+        this->ns            = BitsToValue(flit_bits,    SNPConfig::NS_Width);
+        this->donotgotosd   = BitsToValue(flit_bits,    SNPConfig::DoNotGoToSD_Width);
+        this->rettosrc      = BitsToValue(flit_bits,    SNPConfig::RetToSrc_Width);
+        this->tracetag      = BitsToValue(flit_bits,    SNPConfig::TraceTag_Width);
+    }
+
+
+    void GetFlit(uint32_t snpflit[])
+    {
+        while(!flit_bits.empty()) flit_bits.pop();
+
+        ValueToBits(this->qos,            SNPConfig::QoS_Width,            flit_bits);
+        ValueToBits(this->srcid,          SNPConfig::SrcID_Width,          flit_bits);
+        ValueToBits(this->txnid,          SNPConfig::TxnID_Width,          flit_bits);
+        ValueToBits(this->fwdnid,         SNPConfig::FwdNID_Width,         flit_bits);
+        ValueToBits(this->fwdtxnid,       SNPConfig::FwdTxnID_Width,       flit_bits);
+        ValueToBits(this->opcode,         SNPConfig::Opcode_Width,         flit_bits);
+        ValueToBits(this->addr,           SNPConfig::Addr_Width,           flit_bits);
+        ValueToBits(this->ns,             SNPConfig::NS_Width,             flit_bits);
+        ValueToBits(this->donotgotosd,    SNPConfig::DoNotGoToSD_Width,    flit_bits);
+        ValueToBits(this->rettosrc,       SNPConfig::RetToSrc_Width,       flit_bits);
+        ValueToBits(this->tracetag,       SNPConfig::TraceTag_Width,       flit_bits);
+
+        uint32_t arr_size = ceil(SNPConfig::Total_Width / 32);
+        for(uint32_t i = 0; i < arr_size; i++)
+        {
+            snpflit[i] = BitsToValue(flit_bits, 32);
+        }
+    }
+
+};
