@@ -119,3 +119,77 @@ public:
     }
 };
 
+
+
+
+class RSPFlit
+{
+public:
+    uint32_t    qos;
+    uint32_t    tgtid;
+    uint32_t    srcid;
+    uint32_t    txnid;
+    uint32_t    opcode;
+    uint32_t    resperr;
+    uint32_t    resp;
+    uint32_t    fwdstate; // FwdState, DataPull
+    uint32_t    cbusy;
+    uint32_t    dbid; // DBID[11:0], {4’b0,PGroupID[7:0]}, {4’b0,StashGroupID[7:0]}, {4’b0,TagGroupID[7:0]}
+    uint32_t    pcrdtype;
+    uint32_t    tagop;
+    bool        tracetag;
+
+
+    queue<bool> flit_bits;
+
+    void GetField(uint32_t rspflit[])
+    {
+        while(!flit_bits.empty()) flit_bits.pop();
+
+        uint32_t arr_size = ceil(RSPConfig::Total_Width / 32);
+        for(uint32_t i = 0; i < arr_size; i++)
+        {
+            ValueToBits(rspflit[i], 32, flit_bits);
+        }
+        this->qos           = BitsToValue(flit_bits,    RSPConfig::QoS_Width);
+        this->tgtid         = BitsToValue(flit_bits,    RSPConfig::TgtID_Width);
+        this->srcid         = BitsToValue(flit_bits,    RSPConfig::SrcID_Width);
+        this->txnid         = BitsToValue(flit_bits,    RSPConfig::TxnID_Width);
+        this->opcode        = BitsToValue(flit_bits,    RSPConfig::Opcode_Width);
+        this->resperr       = BitsToValue(flit_bits,    RSPConfig::RespErr_Width);
+        this->resp          = BitsToValue(flit_bits,    RSPConfig::Resp_Width);
+        this->fwdstate      = BitsToValue(flit_bits,    RSPConfig::FwdState_Width);
+        this->cbusy         = BitsToValue(flit_bits,    RSPConfig::CBusy_Width);
+        this->dbid          = BitsToValue(flit_bits,    RSPConfig::DBID_Width);
+        this->pcrdtype      = BitsToValue(flit_bits,    RSPConfig::PCrdType_Width);
+        this->tagop         = BitsToValue(flit_bits,    RSPConfig::TagOp_Width);
+        this->tracetag      = BitsToValue(flit_bits,    RSPConfig::TraceTag_Width);
+    }
+
+
+    void GetFlit(uint32_t rspflit[])
+    {
+        while(!flit_bits.empty()) flit_bits.pop();
+
+        ValueToBits(this->qos,          RSPConfig::QoS_Width,         flit_bits);
+        ValueToBits(this->tgtid,        RSPConfig::TgtID_Width,       flit_bits);
+        ValueToBits(this->srcid,        RSPConfig::SrcID_Width,       flit_bits);
+        ValueToBits(this->txnid,        RSPConfig::TxnID_Width,       flit_bits);
+        ValueToBits(this->opcode,       RSPConfig::Opcode_Width,      flit_bits);
+        ValueToBits(this->resperr,      RSPConfig::RespErr_Width,     flit_bits);
+        ValueToBits(this->resp,         RSPConfig::Resp_Width,        flit_bits);
+        ValueToBits(this->fwdstate,     RSPConfig::FwdState_Width,    flit_bits);
+        ValueToBits(this->cbusy,        RSPConfig::CBusy_Width,       flit_bits);
+        ValueToBits(this->dbid,         RSPConfig::DBID_Width,        flit_bits);
+        ValueToBits(this->pcrdtype,     RSPConfig::PCrdType_Width,    flit_bits);
+        ValueToBits(this->tagop,        RSPConfig::TagOp_Width,       flit_bits);
+        ValueToBits(this->tracetag,     RSPConfig::TraceTag_Width,    flit_bits);
+
+        uint32_t arr_size = ceil(RSPConfig::Total_Width / 32);
+        for(uint32_t i = 0; i < arr_size; i++)
+        {
+            rspflit[i] = BitsToValue(flit_bits, 32);
+        }
+    }
+};
+
