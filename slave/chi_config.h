@@ -59,3 +59,43 @@ namespace REQConfig
             TraceTag_Width,
     };
 }
+
+
+namespace RSPConfig
+{
+    enum
+    {
+        QoS_Width           = 4,
+        TgtID_Width         = 11,
+        SrcID_Width         = 11,
+        TxnID_Width         = 12,
+
+        Opcode_Width        = 7,
+        RespErr_Width       = 2,
+        Resp_Width          = 3,
+        FwdState_Width      = 3,
+        CBusy_Width         = 3,
+
+        DBID_Width          = 12,
+        PCrdType_Width      = 4,
+        TagOp_Width         = 2,
+        TraceTag_Width      = 1,
+
+        Total_Width = 
+            QoS_Width +
+            TgtID_Width +
+            SrcID_Width +
+            TxnID_Width +
+
+            Opcode_Width +
+            RespErr_Width +
+            Resp_Width +
+            FwdState_Width +
+            CBusy_Width +
+
+            DBID_Width +
+            PCrdType_Width +
+            TagOp_Width +
+            TraceTag_Width,
+    };
+}
