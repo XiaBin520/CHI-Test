@@ -192,7 +192,6 @@ public:
 };
 
 
-
 class SNPFlit
 {
 public:
@@ -258,4 +257,100 @@ public:
         }
     }
 
+};
+
+
+class DATFlit
+{
+public:
+    uint32_t    qos;
+    uint32_t    tgtid;
+    uint32_t    srcid;
+    uint32_t    txnid;
+    uint32_t    homenid;
+    uint32_t    opcode;
+    uint32_t    resperr;
+    uint32_t    resp;
+    uint32_t    datapull; // {1’b0, FwdState[2:0]}, {1’b0, DataPull[2:0]}, DataSource[3:0]
+    uint32_t    cbusy;
+    uint32_t    dbid;
+    uint32_t    ccid;
+    uint32_t    dataid;
+    uint32_t    tagop;
+    uint32_t    tag;
+    uint32_t    tu;
+    bool        tracetag;
+    uint32_t    be;
+    uint32_t    data[(DATConfig::Data_Width / 32)];
+
+
+    queue<bool> flit_bits;
+
+    void GetField(uint32_t datflit[])
+    {
+        while(!flit_bits.empty()) flit_bits.pop();
+
+        uint32_t arr_size = ceil(DATConfig::Total_Width / 32);
+        for(uint32_t i = 0; i < arr_size; i++)
+        {
+            ValueToBits(datflit[i], 32, flit_bits);
+        }
+        this->qos           = BitsToValue(flit_bits,    DATConfig::QoS_Width);
+        this->tgtid         = BitsToValue(flit_bits,    DATConfig::TgtID_Width);
+        this->srcid         = BitsToValue(flit_bits,    DATConfig::SrcID_Width);
+        this->txnid         = BitsToValue(flit_bits,    DATConfig::TxnID_Width);
+        this->homenid       = BitsToValue(flit_bits,    DATConfig::HomeNID_Width);
+        this->opcode        = BitsToValue(flit_bits,    DATConfig::Opcode_Width);
+        this->resperr       = BitsToValue(flit_bits,    DATConfig::RespErr_Width);
+        this->resp          = BitsToValue(flit_bits,    DATConfig::Resp_Width);
+        this->datapull      = BitsToValue(flit_bits,    DATConfig::DataPull_Width);
+        this->cbusy         = BitsToValue(flit_bits,    DATConfig::CBusy_Width);
+        this->dbid          = BitsToValue(flit_bits,    DATConfig::DBID_Width);
+        this->ccid          = BitsToValue(flit_bits,    DATConfig::CCID_Width);
+        this->dataid        = BitsToValue(flit_bits,    DATConfig::DataID_Width);
+        this->tagop         = BitsToValue(flit_bits,    DATConfig::TagOp_Width);
+        this->tag           = BitsToValue(flit_bits,    DATConfig::Tag_Width);
+        this->tu            = BitsToValue(flit_bits,    DATConfig::TU_Width);
+        this->tracetag      = BitsToValue(flit_bits,    DATConfig::TraceTag_Width);
+        this->be            = BitsToValue(flit_bits,    DATConfig::BE_Width);
+        for(uint32_t i = 0; i < (DATConfig::Data_Width / 32); i++)
+        {
+            this->data[i]   = BitsToValue(flit_bits, 32);
+        }
+    }
+
+
+    void GetFlit(uint32_t datflit[])
+    {
+        while(!flit_bits.empty()) flit_bits.pop();
+
+        ValueToBits(this->qos,         DATConfig::QoS_Width,         flit_bits);
+        ValueToBits(this->tgtid,       DATConfig::TgtID_Width,       flit_bits);
+        ValueToBits(this->srcid,       DATConfig::SrcID_Width,       flit_bits);
+        ValueToBits(this->txnid,       DATConfig::TxnID_Width,       flit_bits);
+        ValueToBits(this->homenid,     DATConfig::HomeNID_Width,     flit_bits);
+        ValueToBits(this->opcode,      DATConfig::Opcode_Width,      flit_bits);
+        ValueToBits(this->resperr,     DATConfig::RespErr_Width,     flit_bits);
+        ValueToBits(this->resp,        DATConfig::Resp_Width,        flit_bits);
+        ValueToBits(this->datapull,    DATConfig::DataPull_Width,    flit_bits);
+        ValueToBits(this->cbusy,       DATConfig::CBusy_Width,       flit_bits);
+        ValueToBits(this->dbid,        DATConfig::DBID_Width,        flit_bits);
+        ValueToBits(this->ccid,        DATConfig::CCID_Width,        flit_bits);
+        ValueToBits(this->dataid,      DATConfig::DataID_Width,      flit_bits);
+        ValueToBits(this->tagop,       DATConfig::TagOp_Width,       flit_bits);
+        ValueToBits(this->tag,         DATConfig::Tag_Width,         flit_bits);
+        ValueToBits(this->tu,          DATConfig::TU_Width,          flit_bits);
+        ValueToBits(this->tracetag,    DATConfig::TraceTag_Width,    flit_bits);
+        ValueToBits(this->be,          DATConfig::BE_Width,          flit_bits);
+        for(uint32_t i = 0; i < (DATConfig::Data_Width / 32); i++)
+        {
+            ValueToBits(this->data[i], DATConfig::Data_Width, flit_bits);
+        }
+
+        uint32_t arr_size = ceil(DATConfig::Total_Width / 32);
+        for(uint32_t i = 0; i < arr_size; i++)
+        {
+            datflit[i] = BitsToValue(flit_bits, 32);
+        }
+    }
 };
