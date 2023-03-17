@@ -2,14 +2,16 @@
 #include "chi.h"
 #include "cache.h"
 
-class CHIReq
+class CHIReqAlloc
 {
 public:
     vector<REQFlit*> req_vec;
     queue<REQFlit*> locked_req_queue;
 
-    void AllocCacheLine(Cache<1024>* cache)
+    void AllocCacheLine(Cache<1024>* cache, REQFlit* rxreqflit)
     {
+        if(rxreqflit != NULL) locked_req_queue.push(rxreqflit);
+
         uint32_t count = locked_req_queue.size();
         for(uint32_t i = 0; i < count; i++)
         {
@@ -29,12 +31,6 @@ public:
                 locked_req_queue.push(reqflit);
             }
         }
-    }
-
-    void AcceptRxReqFlit(REQFlit *rxreqflit)
-    {
-        if(rxreqflit == NULL) return;
-        locked_req_queue.push(rxreqflit);
     }
 
 };
