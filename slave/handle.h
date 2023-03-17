@@ -349,3 +349,42 @@ public:
         return (sent_done & accept_done);
     }
 };
+
+
+class NonCopyBackGot : public IHandleGot
+{
+public:
+    bool got_Comp;
+    bool got_DBIDResp;
+    bool got_CompDBIDResp;
+
+    bool got_NonCopyBackWrData;
+    bool got_CompAck;
+
+    bool got_NCBWrDataCompAck;
+
+    NonCopyBackGot(bool CompAck)
+    {   
+        got_Comp              = false;
+        got_DBIDResp          = false;
+        got_CompDBIDResp      = false;
+        got_NonCopyBackWrData = false;
+        got_CompAck           = CompAck;
+        got_NCBWrDataCompAck  = false;
+    }
+
+    virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotRxDatFlit(DATFlit* datflit) {return;}
+    virtual void GotTxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotTxDatFlit(DATFlit* datflit) {return;}
+
+    virtual bool Done()
+    {
+        bool sent_done = got_CompDBIDResp | (got_Comp & got_DBIDResp);
+        bool accept_done = (got_NonCopyBackWrData & got_CompAck) | got_NCBWrDataCompAck;
+        return (sent_done & accept_done);
+    }
+
+};
+
+
