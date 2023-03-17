@@ -40,3 +40,35 @@ public:
 };
 
 
+
+class Port
+{
+public:
+    REQFlit* rxreqflit;
+    RSPFlit* rxrspflit;
+    DATFlit* rxdatflit;
+
+    SNPFlit* txsnpflit;
+    RSPFlit* txrspflit;
+    DATFlit* txdatflit;
+
+
+    enum{RxReqID = 0, RxRspID, RxDatID, TxSnpID, TxRspID, TxDatID};
+
+    template<uint32_t channel_id>
+    bool payload(bool flitpend, bool flitv, bool lcrdv)
+    {
+        static bool lastpend = false;
+
+        bool valid_payload = lastpend & flitv & lcrdv;
+        lastpend = flitpend;
+        return valid_payload;
+    }
+
+
+    void Monitor(VTestTop *dut, LSReq *ls)
+    {
+        
+
+    }
+};
