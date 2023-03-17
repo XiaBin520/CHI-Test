@@ -12,8 +12,8 @@ public:
     uint32_t rand_sel;
     void RandSel()
     {
-        rand_sel = (rand_sel > 10) ? 0 : 
-                                     (rand_sel+1);
+        rand_sel = (rand_sel > 10) ? 0 :
+                                     (rand_sel + 1);
     }
 
     virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec) {return;}
@@ -205,4 +205,76 @@ public:
 
 };
 
+
+
+class CopyBackSet : public IHandleSet
+{
+public:
+    bool set_CompDBIDResp;
+
+    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    {
+        RandSel();
+
+        /*
+        *   The requirements for setting CompDBIDResp
+        *       a. Not set CompDBIDResp
+        */
+        if((rand_sel == 0) &
+           (!set_CompDBIDResp))
+        {
+            set_CompDBIDResp = true;
+
+            RSPFlit* rspflit = new RSPFlit();
+            rspflit_vec.push_back(rspflit);
+        }
+    }
+
+    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+};
+
+
+
+class WriteEvictOrEvictSet : public IHandleSet
+{
+public:
+    bool set_Comp;
+    bool set_CompDBIDResp;
+
+    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    {
+        RandSel();
+
+        /*
+        *   The requirements for setting Comp
+        *       a. Not set Comp
+        *       b. Not set CompDBIDResp
+        */
+        if((rand_sel == 0) &
+           (!set_Comp) & (!set_CompDBIDResp))
+        {
+            set_Comp = true;
+
+            RSPFlit* rspflit = new RSPFlit();
+            rspflit_vec.push_back(rspflit);
+        }
+
+        /*
+        *   The requirements for setting CompDBIDResp
+        *       a. Not set CompDBIDResp
+        *       b. Not set Comp
+        */
+        if((rand_sel == 0) &
+           (!set_CompDBIDResp) & (!set_Comp))
+        {
+            set_CompDBIDResp = true;
+
+            RSPFlit* rspflit = new RSPFlit();
+            rspflit_vec.push_back(rspflit);
+        }
+    }
+
+    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+
+};
 
