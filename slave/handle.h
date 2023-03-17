@@ -413,3 +413,33 @@ public:
 };
 
 
+class WriteEvictOrEvictGot : public IHandleGot
+{
+public:
+    bool got_Comp;
+    bool got_CompDBIDresp;
+    bool got_CompAck;
+    bool got_CopyBackWrData;
+
+    WriteEvictOrEvictGot()
+    {
+        got_Comp           = false;
+        got_CompDBIDresp   = false;
+        got_CompAck        = false;
+        got_CopyBackWrData = false;
+    }
+
+    virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotRxDatFlit(DATFlit* datflit) {return;}
+    virtual void GotTxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotTxDatFlit(DATFlit* datflit) {return;}
+
+    virtual bool Done()
+    {
+        bool sent_done   = got_Comp | got_CompDBIDresp;
+        bool accept_done = got_CompAck | got_CopyBackWrData;
+        return (sent_done & accept_done);
+    }
+};
+
+
