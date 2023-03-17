@@ -324,3 +324,28 @@ public:
 };
 
 
+
+class DatalessGot : public IHandleGot
+{
+public:
+    bool got_Comp;
+    bool got_CompAck;
+
+    DatalessGot(bool CompAck)
+    {
+        got_Comp = false;
+        got_CompAck = false;
+    }
+
+    virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotRxDatFlit(DATFlit* datflit) {return;}
+    virtual void GotTxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotTxDatFlit(DATFlit* datflit) {return;}
+
+    virtual bool Done()
+    {
+        bool sent_done = got_Comp;
+        bool accept_done = got_CompAck;
+        return (sent_done & accept_done);
+    }
+};
