@@ -191,7 +191,7 @@ public:
         *       c. Not set DBIDResp
         */
         if((rand_sel == 3) & 
-           (!set_CompDBIDResp) & (!set_Comp) (!set_DBIDResp))
+           (!set_CompDBIDResp) & (!set_Comp) & (!set_DBIDResp))
         {
             set_CompDBIDResp = true;
 
