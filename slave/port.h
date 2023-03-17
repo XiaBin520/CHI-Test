@@ -55,20 +55,29 @@ public:
 
     enum{RxReqID = 0, RxRspID, RxDatID, TxSnpID, TxRspID, TxDatID};
 
-    template<uint32_t channel_id>
-    bool payload(bool flitpend, bool flitv, bool lcrdv)
+    template<uint32_t channel_id, typename TT>
+    TT* Payload(bool flitpend, bool flitv, bool lcrdv, uint32_t flit[])
     {
         static bool lastpend = false;
 
         bool valid_payload = lastpend & flitv & lcrdv;
         lastpend = flitpend;
-        return valid_payload;
+
+        if(valid_payload)
+        {
+            TT *temp = new TT();
+            TT->GetField(flit);
+            return temp;
+        }
+        else
+        {
+            return NULL;
+        }
     }
 
 
     void Monitor(VTestTop *dut, LSReq *ls)
     {
-        
 
     }
 };
