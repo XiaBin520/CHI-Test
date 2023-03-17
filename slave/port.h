@@ -86,4 +86,28 @@ public:
         txrspflit = Payload<TxRspID, RSPFlit>(dut->rxrspflitpend, dut->rxrspflitv, dut->rxrsplcrdv, dut->rxrspflit);
         txdatflit = Payload<TxDatID, DATFlit>(dut->rxdatflitpend, dut->rxdatflitv, dut->txdatlcrdv, dut->rxdatflit);
     }
+
+
+    void Driver(VTestTop *dut, SNPFlit *txsnpflit, RSPFlit *txrspflit, DATFlit *txdatflit)
+    {
+        // RxREQ Channel
+        dut->txreqlcrdv = true;
+        // RxSNP Channel
+        dut->txrsplcrdv = true;
+        // RxDAT Channel
+        dut->txdatlcrdv = true;
+
+        // TxSNP Channel
+        dut->rxsnpflitpend = true;
+        dut->rxsnpflitv    = (txsnpflit != NULL);
+        if(txsnpflit != NULL) txsnpflit->GetFlit(dut->rxsnpflit);
+        // TxRSP Channel
+        dut->rxrspflitpend = true;
+        dut->rxrspflitv    = (txrspflit != NULL);
+        if(txrspflit != NULL) txrspflit->GetFlit(dut->rxrspflit);
+        // TxDAT Channel
+        dut->rxdatflitpend = true;
+        dut->rxdatflitv    = (txdatflit != NULL);
+        if(txdatflit != NULL) txdatflit->GetFlit(dut->rxdatflit);
+    }
 };
