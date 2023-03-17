@@ -60,10 +60,10 @@ public:
     {
         static bool lastpend = false;
 
-        bool valid_payload = lastpend & flitv & lcrdv;
+        bool valid = lastpend & flitv & lcrdv;
         lastpend = flitpend;
 
-        if(valid_payload)
+        if(valid)
         {
             TT *temp = new TT();
             TT->GetField(flit);
@@ -78,6 +78,12 @@ public:
 
     void Monitor(VTestTop *dut, LSReq *ls)
     {
+        rxreqflit = Payload<RxReqID, REQFlit>(dut->txreqflitpend, dut->txreqflitv, dut->txreqlcrdv, dut->txreqflit);
+        rxrspflit = Payload<RxRspID, RSPFlit>(dut->txrspflitpend, dut->txrspflitv, dut->txrsplcrdv, dut->txrspflit);
+        rxdatflit = Payload<RxDatID, DATFlit>(dut->txdatflitpend, dut->txdatflitv, dut->txdatlcrdv, dut->txdatflit);
 
+        txsnpflit = Payload<TxSnpID, SNPFlit>(dut->rxsnpflitpend, dut->rxsnpflitv, dut->rxsnplcrdv, dut->rxsnpflit);
+        txrspflit = Payload<TxRspID, RSPFlit>(dut->rxrspflitpend, dut->rxrspflitv, dut->rxrsplcrdv, dut->rxrspflit);
+        txdatflit = Payload<TxDatID, DATFlit>(dut->rxdatflitpend, dut->rxdatflitv, dut->txdatlcrdv, dut->rxdatflit);
     }
 };
