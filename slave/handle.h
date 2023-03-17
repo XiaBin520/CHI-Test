@@ -278,3 +278,49 @@ public:
 
 };
 
+
+
+
+class IHandleGot
+{
+public:
+    virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotRxDatFlit(DATFlit* datflit) {return;}
+    virtual void GotTxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotTxDatFlit(DATFlit* datflit) {return;}
+
+    virtual bool Done() {return false;}
+};
+
+
+
+class ReadGot : public IHandleGot
+{
+public:
+    bool got_CompData;
+    bool got_RespSepData;
+    bool got_DataSepResp;
+    bool got_CompAck;
+
+    ReadGot(bool CompAck = false)
+    {
+        got_CompData    = false;
+        got_RespSepData = false;
+        got_DataSepResp = false;
+        got_CompAck     = CompAck;
+    }
+
+    virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotRxDatFlit(DATFlit* datflit) {return;}
+    virtual void GotTxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotTxDatFlit(DATFlit* datflit) {return;}
+
+    virtual bool Done()
+    {
+        bool sent_done   = got_CompData | (got_RespSepData & got_DataSepResp);
+        bool accept_done = got_CompAck;
+        return (sent_done & accept_done);
+    }
+};
+
+
