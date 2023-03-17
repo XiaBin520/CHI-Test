@@ -3,12 +3,11 @@
 
 enum{Owner_NONE = 0, Owner_LSREQ, Owner_CHIREQ};
 
-template<uint32_t size = 16>
 class CacheLine
 {
 public:
     uint32_t    owner;
-    uint32_t    data[size]; // 32 bits * 16 = 4B * 16 = 64B = 512 bits
+    uint32_t    data[16]; // 32 bits * 16 = 4B * 16 = 64B = 512 bits
 
     CacheLine()
     {
