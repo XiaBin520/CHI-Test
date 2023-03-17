@@ -31,11 +31,11 @@ public:
     // bool set_ReadReceipt; // 暂时用不到
 
 
-    ReadSet(bool CompData = false, bool RespSepData = false, bool DataSepResp = false)
+    ReadSet()
     {
-        set_CompData    = CompData;
-        set_RespSepData = RespSepData;
-        set_DataSepResp = DataSepResp;
+        set_CompData    = false;
+        set_RespSepData = false;
+        set_DataSepResp = false;
 
         rand_sel = 0;
     }
@@ -88,7 +88,7 @@ public:
         *       b. Not set CompData
         *       c. set RespSepData
         */
-        if((rand_sel == 1) &
+        if((rand_sel == 1) & // Set DataSepResp
            (!set_DataSepResp) & (!set_CompData) & set_RespSepData)
         {
             set_DataSepResp = true;
@@ -107,10 +107,9 @@ class DatalessSet : public IHandleSet
 public:
     bool set_Comp;
 
-    DatalessSet(bool Comp)
+    DatalessSet()
     {
-        set_Comp = Comp;
-
+        set_Comp = false;
         rand_sel = 0;
     }
 
@@ -134,3 +133,76 @@ public:
 
     virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
 };
+
+
+
+class NonCopyBackSet : public IHandleSet
+{
+public:
+    bool set_Comp;
+    bool set_DBIDResp;
+    bool set_CompDBIDResp;
+
+    NonCopyBackSet()
+    {
+        set_Comp         = false;
+        set_DBIDResp     = false;
+        set_CompDBIDResp = false;
+
+        rand_sel = 0;
+    }
+
+    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    {
+        RandSel();
+
+        /*
+        *   The requirements for setting Comp:
+        *       a. Not set Comp
+        *       b. Not set CompDBIDResp
+        */
+        if((rand_sel == 0) & // Set Comp
+           (!set_Comp) & (!set_CompDBIDResp))
+        {
+            set_Comp = true;
+
+            RSPFlit* rspflit = new RSPFlit();
+            rspflit_vec.push_back(rspflit);
+        }
+
+        /*
+        *   The requirements for setting DBIDResp:
+        *       a. Not set DBIDResp
+        *       b. Not set CompDBIDResp
+        */
+        if((rand_sel == 1) & 
+           (!set_DBIDResp) & (!set_CompDBIDResp))
+        {
+            set_DBIDResp = true;
+
+            RSPFlit* rspflit = new RSPFlit();
+            rspflit_vec.push_back(rspflit);
+        }
+
+        /*
+        *   The requirements for setting CompDBIDResp:
+        *       a. Not set CompDBIDResp
+        *       b. Not set Comp
+        *       c. Not set DBIDResp
+        */
+        if((rand_sel == 3) & 
+           (!set_CompDBIDResp) & (!set_Comp) (!set_DBIDResp))
+        {
+            set_CompDBIDResp = true;
+
+            RSPFlit* rspflit = new RSPFlit();
+            rspflit_vec.push_back(rspflit);
+        }
+
+    }
+
+    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+
+};
+
+
