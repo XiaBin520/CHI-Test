@@ -3,6 +3,18 @@
 #include "chi.h"
 
 
+class CHIReqExtension
+{
+public:
+    REQFlit* reqflit;
+    uint32_t input_txnid;
+    uint32_t output_txnid;
+};
+
+
+
+
+
 class IHandleSet
 {
 public:

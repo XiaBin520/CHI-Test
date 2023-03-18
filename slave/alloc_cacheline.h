@@ -12,7 +12,7 @@ public:
     {
         if(rxlsreq != NULL) locked_lsreq_vec.push_back(rxlsreq);
 
-        if(!port->txsnpflit_queue.empty())
+        if(port->TxSnpChannelIsBusy())
         {
             lsreq = NULL;
             return;
