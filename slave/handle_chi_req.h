@@ -33,3 +33,39 @@ public:
         }
     }
 };
+
+
+class AllocCacheLine
+{
+public:
+    LSReq *lsreq;
+    vector<LSReq*> locked_lsreq_queue;
+
+    void LSAlloc(Cache<1024> *cache, Port *port, LSReq *rxlsreq)
+    {
+        if(rxlsreq != NULL) locked_lsreq_queue.push_back(rxlsreq);
+
+        if(!port->txsnpflit_queue.empty())
+        {
+            lsreq = NULL;
+            return;
+        }
+
+        uint32_t count = locked_lsreq_queue.size();
+        for(uint32_t i = 0; i < count; i++)
+        {
+            LSReq *temp = locked_lsreq_queue[i];
+
+            uint64_t addr = temp->addr;
+            CacheLine *line = cache->GetLine(addr);
+
+            if(line->owner == Owner_NONE) // Alloc Success
+            {
+                line->owner = Owner_LSREQ;
+                lsreq = temp;
+                locked_lsreq_queue.erase(locked_lsreq_queue.begin() + i);
+                return;
+            }
+        }
+    }
+};
