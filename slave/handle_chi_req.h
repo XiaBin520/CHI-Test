@@ -5,18 +5,18 @@
 class HandleCHIReq
 {
 public:
-    vector<REQFlit*> req_vec;
-    queue<REQFlit*> locked_req_queue;
+    vector<REQFlit*> chireq_vec;
+    queue<REQFlit*> locked_chireq_queue;
 
     void AllocCacheLine(Cache<1024>* cache, REQFlit* rxreqflit)
     {
-        if(rxreqflit != NULL) locked_req_queue.push(rxreqflit);
+        if(rxreqflit != NULL) locked_chireq_queue.push(rxreqflit);
 
-        uint32_t count = locked_req_queue.size();
+        uint32_t count = locked_chireq_queue.size();
         for(uint32_t i = 0; i < count; i++)
         {
-            REQFlit* reqflit = locked_req_queue.front();
-            locked_req_queue.pop();
+            REQFlit* reqflit = locked_chireq_queue.front();
+            locked_chireq_queue.pop();
 
             uint64_t addr = reqflit->addr;
             CacheLine* line = cache->GetLine(addr);
@@ -24,11 +24,11 @@ public:
             if(line->owner == Owner_NONE) // Alloc Success
             {
                 line->owner = Owner_CHIREQ;
-                req_vec.push_back(reqflit);
+                chireq_vec.push_back(reqflit);
             }
             else // Alloc Fail
             {
-                locked_req_queue.push(reqflit);
+                locked_chireq_queue.push(reqflit);
             }
         }
     }
@@ -39,11 +39,11 @@ class AllocCacheLine
 {
 public:
     LSReq *lsreq;
-    vector<LSReq*> locked_lsreq_queue;
+    vector<LSReq*> locked_lsreq_vec;
 
     void LSAlloc(Cache<1024> *cache, Port *port, LSReq *rxlsreq)
     {
-        if(rxlsreq != NULL) locked_lsreq_queue.push_back(rxlsreq);
+        if(rxlsreq != NULL) locked_lsreq_vec.push_back(rxlsreq);
 
         if(!port->txsnpflit_queue.empty())
         {
@@ -51,10 +51,10 @@ public:
             return;
         }
 
-        uint32_t count = locked_lsreq_queue.size();
+        uint32_t count = locked_lsreq_vec.size();
         for(uint32_t i = 0; i < count; i++)
         {
-            LSReq *temp = locked_lsreq_queue[i];
+            LSReq *temp = locked_lsreq_vec[i];
 
             uint64_t addr = temp->addr;
             CacheLine *line = cache->GetLine(addr);
@@ -63,8 +63,38 @@ public:
             {
                 line->owner = Owner_LSREQ;
                 lsreq = temp;
-                locked_lsreq_queue.erase(locked_lsreq_queue.begin() + i);
+                locked_lsreq_vec.erase(locked_lsreq_vec.begin() + i);
                 return;
+            }
+        }
+    }
+
+
+public:
+    queue<REQFlit*> chireq_queue;
+    queue<REQFlit*> locked_chireq_queue;
+
+    void CHIAlloc(Cache<1024>* cache, REQFlit* rxreqflit)
+    {
+        if(rxreqflit != NULL) locked_chireq_queue.push(rxreqflit);
+
+        uint32_t count = locked_chireq_queue.size();
+        for(uint32_t i = 0; i < count; i++)
+        {
+            REQFlit* reqflit = locked_chireq_queue.front();
+            locked_chireq_queue.pop();
+
+            uint64_t addr = reqflit->addr;
+            CacheLine* line = cache->GetLine(addr);
+
+            if(line->owner == Owner_NONE) // Alloc Success
+            {
+                line->owner = Owner_CHIREQ;
+                chireq_queue.push(reqflit);
+            }
+            else // Alloc Fail
+            {
+                locked_chireq_queue.push(reqflit);
             }
         }
     }
