@@ -369,7 +369,7 @@ public:
 
 
 
-class IHandleGot
+class IHandleAccept
 {
 public:
     virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
@@ -382,7 +382,7 @@ public:
 
 
 
-class ReadGot : public IHandleGot
+class ReadAccept : public IHandleAccept
 {
 public:
     bool got_CompData;
@@ -390,7 +390,7 @@ public:
     bool got_DataSepResp;
     bool got_CompAck;
 
-    ReadGot(bool CompAck = false)
+    ReadAccept(bool CompAck = false)
     {
         got_CompData    = false;
         got_RespSepData = false;
@@ -412,13 +412,13 @@ public:
 };
 
 
-class DatalessGot : public IHandleGot
+class DatalessAccept : public IHandleAccept
 {
 public:
     bool got_Comp;
     bool got_CompAck;
 
-    DatalessGot(bool CompAck = false)
+    DatalessAccept(bool CompAck = false)
     {
         got_Comp = false;
         got_CompAck = false;
@@ -438,7 +438,7 @@ public:
 };
 
 
-class NonCopyBackGot : public IHandleGot
+class NonCopyBackAccept : public IHandleAccept
 {
 public:
     bool got_Comp;
@@ -450,7 +450,7 @@ public:
 
     bool got_NCBWrDataCompAck;
 
-    NonCopyBackGot(bool CompAck = false)
+    NonCopyBackAccept(bool CompAck = false)
     {   
         got_Comp              = false;
         got_DBIDResp          = false;
@@ -475,13 +475,13 @@ public:
 };
 
 
-class CopyBackGot : public IHandleGot
+class CopyBackAccept : public IHandleAccept
 {
 public:
     bool got_CompDBIDResp;
     bool got_CopyBackWrData;
 
-    CopyBackGot()
+    CopyBackAccept()
     {
         got_CompDBIDResp   = false;
         got_CopyBackWrData = false;
@@ -501,7 +501,7 @@ public:
 };
 
 
-class WriteEvictOrEvictGot : public IHandleGot
+class WriteEvictOrEvictAccept : public IHandleAccept
 {
 public:
     bool got_Comp;
@@ -509,7 +509,7 @@ public:
     bool got_CompAck;
     bool got_CopyBackWrData;
 
-    WriteEvictOrEvictGot()
+    WriteEvictOrEvictAccept()
     {
         got_Comp           = false;
         got_CompDBIDresp   = false;
