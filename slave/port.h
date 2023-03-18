@@ -53,6 +53,9 @@ public:
     RSPFlit* txrspflit;
     DATFlit* txdatflit;
 
+    queue<SNPFlit*> txsnpflit_queue;
+    queue<RSPFlit*> txrspflit_queue;
+    queue<DATFlit*> txdatflit_queue;
 
     enum{RxReqID = 0, RxRspID, RxDatID, TxSnpID, TxRspID, TxDatID};
 
@@ -98,10 +101,30 @@ public:
         txsnpflit = Payload<TxSnpID, SNPFlit>(dut->rxsnpflitpend, dut->rxsnpflitv, dut->rxsnplcrdv, dut->rxsnpflit);
         txrspflit = Payload<TxRspID, RSPFlit>(dut->rxrspflitpend, dut->rxrspflitv, dut->rxrsplcrdv, dut->rxrspflit);
         txdatflit = Payload<TxDatID, DATFlit>(dut->rxdatflitpend, dut->rxdatflitv, dut->txdatlcrdv, dut->rxdatflit);
+
+
+        if(txsnpflit != NULL)
+        {
+            SNPFlit *temp = txsnpflit_queue.front();
+            txsnpflit_queue.pop();
+            delete temp;
+        }
+        if(txrspflit != NULL)
+        {
+            RSPFlit *temp = txrspflit_queue.front();
+            txrspflit_queue.pop();
+            delete temp;
+        }
+        if(txdatflit != NULL)
+        {
+            DATFlit *temp = txdatflit_queue.front();
+            txdatflit_queue.pop();
+            delete temp;
+        }
     }
 
 
-    void Driver(VTestTop *dut, SNPFlit *txsnpflit, RSPFlit *txrspflit, DATFlit *txdatflit)
+    void Driver(VTestTop *dut)
     {
         // RxREQ Channel
         dut->txreqlcrdv = true;
@@ -112,15 +135,35 @@ public:
 
         // TxSNP Channel
         dut->rxsnpflitpend = true;
-        dut->rxsnpflitv    = (txsnpflit != NULL);
-        if(txsnpflit != NULL) txsnpflit->GetFlit(dut->rxsnpflit);
+        if(!txsnpflit_queue.empty())
+        {
+            dut->rxsnpflitv = true;
+            SNPFlit *snpflit = txsnpflit_queue.front();
+            snpflit->GetFlit(dut->rxsnpflit);
+        }
+        else
+        {
+            dut->rxsnpflitv = false;
+        }
         // TxRSP Channel
         dut->rxrspflitpend = true;
-        dut->rxrspflitv    = (txrspflit != NULL);
-        if(txrspflit != NULL) txrspflit->GetFlit(dut->rxrspflit);
+        if(!txrspflit_queue.empty())
+        {
+            dut->rxrspflitv = true;
+            RSPFlit *rspflit = txrspflit_queue.front();
+            rspflit->GetFlit(dut->rxrspflit);
+        }
+        else
+        {
+            dut->rxrspflitv = false;
+        }
         // TxDAT Channel
         dut->rxdatflitpend = true;
-        dut->rxdatflitv    = (txdatflit != NULL);
-        if(txdatflit != NULL) txdatflit->GetFlit(dut->rxdatflit);
+        if(!txdatflit_queue.empty())
+        {
+            dut->rxdatflitv = true;
+            DATFlit *datflit = txdatflit_queue.front();
+            datflit->GetFlit(dut->rxdatflit);
+        }
     }
 };
