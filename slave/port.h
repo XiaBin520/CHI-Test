@@ -44,6 +44,7 @@ public:
 class Port
 {
 public:
+    LSReq*   rxlsreq;
     REQFlit* rxreqflit;
     RSPFlit* rxrspflit;
     DATFlit* rxdatflit;
@@ -78,6 +79,18 @@ public:
 
     void Monitor(VTestTop *dut, LSReq *ls)
     {
+        if(ls->valid)
+        {
+            rxlsreq = new LSReq();
+            rxlsreq->valid = true;
+            rxlsreq->opcode = ls->opcode;
+            rxlsreq->addr   = ls->addr;
+        }
+        else
+        {
+            rxlsreq = NULL;
+        }
+        
         rxreqflit = Payload<RxReqID, REQFlit>(dut->txreqflitpend, dut->txreqflitv, dut->txreqlcrdv, dut->txreqflit);
         rxrspflit = Payload<RxRspID, RSPFlit>(dut->txrspflitpend, dut->txrspflitv, dut->txrsplcrdv, dut->txrspflit);
         rxdatflit = Payload<RxDatID, DATFlit>(dut->txdatflitpend, dut->txdatflitv, dut->txdatlcrdv, dut->txdatflit);
