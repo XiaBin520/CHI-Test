@@ -1,13 +1,20 @@
 
-
+#include "loadstore.h"
 #include "chi.h"
 
 
 class CHIReqExtension
 {
 public:
-    REQFlit* reqflit;
+    REQFlit *reqflit;
     uint32_t input_txnid;
+    uint32_t output_txnid;
+};
+
+class LSReqExtension
+{
+public:
+    LSReq *lsreq;
     uint32_t output_txnid;
 };
 
