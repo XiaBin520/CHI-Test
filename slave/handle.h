@@ -25,20 +25,6 @@ public:
 class Handle
 {
 public:
-    SNPFlit* CreateSNPFlit(LSReqExtension *lsreq_extension)
-    {
-        static uint32_t op_sel = 0;
-
-        SNPFlit *snpflit = new SNPFlit();
-        snpflit->qos = 0;
-        snpflit->txnid = lsreq_extension->output_txnid;
-        snpflit->addr  = lsreq_extension->lsreq->addr;
-        return snpflit;
-    }
-
-
-
-public:
     vector<CHIReqExtension*> chireq_vec;
     vector<LSReqExtension*>  lsreq_vec;
 
