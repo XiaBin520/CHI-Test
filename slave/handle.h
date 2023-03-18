@@ -49,7 +49,7 @@ public:
             lsreq_extension->output_txnid = AllocTxnID();
             lsreq_vec.push_back(lsreq_extension);
 
-            SNPFlit *txsnpflit = CreateSNPFlit(lsreq_extension);
+            SNPFlit *txsnpflit = SetTxSNPFlit(lsreq_extension);
             port->handling_txsnpflit_queue.push(txsnpflit);
         }
         // Create HandleGot
@@ -73,6 +73,29 @@ public:
             }
         }
     }
+
+
+
+
+
+
+    SNPFlit* SetTxSNPFlit(LSReqExtension *lsreq_extension)
+    {
+        static uint32_t op_sel = 0;
+
+        SNPFlit *snpflit = new SNPFlit();
+        snpflit->qos = 0;
+        snpflit->txnid = lsreq_extension->output_txnid;
+        snpflit->addr  = lsreq_extension->lsreq->addr;
+        return snpflit;
+    }
+
+
+
+
+
+
+
 };
 
 
