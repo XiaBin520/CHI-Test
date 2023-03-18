@@ -51,6 +51,25 @@ public:
         // Create Snoop 
         // Create HandleGot
     }
+
+
+    void HandleCHIReq(Port *port, AllocCacheLine *alloc_cacheline)
+    {
+        bool has_chireq_payload = !alloc_cacheline->chireq_queue.empty();
+        if(has_chireq_payload)
+        {
+            while(!alloc_cacheline->chireq_queue.empty())
+            {
+                REQFlit *reqflit = alloc_cacheline->chireq_queue.front();
+                alloc_cacheline->chireq_queue.pop();
+
+                CHIReqExtension *chireq_extension = new CHIReqExtension();
+                chireq_extension->reqflit = reqflit;
+                chireq_extension->input_txnid = reqflit->txnid;
+                chireq_extension->output_txnid = AllocTxnID();
+            }
+        }
+    }
 };
 
 
