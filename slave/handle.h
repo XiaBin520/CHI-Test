@@ -531,3 +531,19 @@ public:
 };
 
 
+class SnoopAccept : public IHandleAccept
+{
+public:
+    bool got_SnpResp;
+    bool got_SnpRespData;
+
+    virtual void GotRxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotRxDatFlit(DATFlit* datflit) {return;}
+    virtual void GotTxRspFlit(RSPFlit* rspflit) {return;}
+    virtual void GotTxDatFlit(DATFlit* datflit) {return;}
+
+    virtual bool Done()
+    {
+        return (got_SnpResp | got_SnpRespData);
+    }
+};
