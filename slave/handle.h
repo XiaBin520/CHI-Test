@@ -1,7 +1,8 @@
 
-#include "loadstore.h"
 #include "chi.h"
-
+#include "loadstore.h"
+#include "port.h"
+#include "alloc_cacheline.h"
 
 class CHIReqExtension
 {
@@ -11,6 +12,7 @@ public:
     uint32_t output_txnid;
 };
 
+
 class LSReqExtension
 {
 public:
@@ -19,6 +21,37 @@ public:
 };
 
 
+
+class Handle
+{
+public:
+    vector<CHIReqExtension*> chireq_vec;
+    vector<LSReqExtension*>  lsreq_vec;
+
+    uint32_t output_txnid;
+
+    uint32_t AllocTxnID()
+    {
+        uint32_t last_txnid = output_txnid;
+        output_txnid = (output_txnid > 1024) ? 0 : (output_txnid + 1);
+        return last_txnid;
+    }
+
+    void HandleLSReq(Port *port, AllocCacheLine *alloc_cacheline)
+    {
+        bool txsnpchannel_is_free = !port->TxSnpChannelIsBusy();
+        bool has_lsreq_payload = (alloc_cacheline->lsreq != NULL);
+
+        if(txsnpchannel_is_free & has_lsreq_payload)
+        {
+            LSReqExtension *lsreq_extension = new LSReqExtension();
+            lsreq_extension->lsreq = alloc_cacheline->lsreq;
+            lsreq_extension->output_txnid = AllocTxnID();
+        }
+        // Create Snoop 
+        // Create HandleGot
+    }
+};
 
 
 
