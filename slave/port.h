@@ -57,6 +57,11 @@ public:
     queue<RSPFlit*> handling_txrspflit_queue;
     queue<DATFlit*> handling_txdatflit_queue;
 
+
+    bool TxSnpChannelIsBusy() {return !handling_txdatflit_queue.empty();}
+    bool TxRspChannelIsBusy() {return !handling_txrspflit_queue.empty();}
+    bool TxDatChannelIsBusy() {return !handling_txdatflit_queue.empty();}
+
     enum{RxReqID = 0, RxRspID, RxDatID, TxSnpID, TxRspID, TxDatID};
 
     template<uint32_t channel_id, typename TT>
