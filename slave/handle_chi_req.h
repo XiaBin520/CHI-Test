@@ -2,39 +2,6 @@
 #include "port.h"
 #include "cache.h"
 
-class HandleCHIReq
-{
-public:
-    vector<REQFlit*> chireq_vec;
-    queue<REQFlit*> locked_chireq_queue;
-
-    void AllocCacheLine(Cache<1024>* cache, REQFlit* rxreqflit)
-    {
-        if(rxreqflit != NULL) locked_chireq_queue.push(rxreqflit);
-
-        uint32_t count = locked_chireq_queue.size();
-        for(uint32_t i = 0; i < count; i++)
-        {
-            REQFlit* reqflit = locked_chireq_queue.front();
-            locked_chireq_queue.pop();
-
-            uint64_t addr = reqflit->addr;
-            CacheLine* line = cache->GetLine(addr);
-
-            if(line->owner == Owner_NONE) // Alloc Success
-            {
-                line->owner = Owner_CHIREQ;
-                chireq_vec.push_back(reqflit);
-            }
-            else // Alloc Fail
-            {
-                locked_chireq_queue.push(reqflit);
-            }
-        }
-    }
-};
-
-
 class AllocCacheLine
 {
 public:
