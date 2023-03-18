@@ -65,4 +65,13 @@ public:
             }
         }
     }
+
+
+public:
+    void Eval(Cache<1024> *cache, Port *port, REQFlit *rxreqflit, LSReq *rxlsreq)
+    {
+        CHIAlloc(cache, rxreqflit);
+        LSAlloc(cache, port, rxlsreq);
+    }
+
 };
