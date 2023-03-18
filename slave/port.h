@@ -53,9 +53,9 @@ public:
     RSPFlit* txrspflit;
     DATFlit* txdatflit;
 
-    queue<SNPFlit*> txsnpflit_queue;
-    queue<RSPFlit*> txrspflit_queue;
-    queue<DATFlit*> txdatflit_queue;
+    queue<SNPFlit*> handling_txsnpflit_queue;
+    queue<RSPFlit*> handling_txrspflit_queue;
+    queue<DATFlit*> handling_txdatflit_queue;
 
     enum{RxReqID = 0, RxRspID, RxDatID, TxSnpID, TxRspID, TxDatID};
 
@@ -103,22 +103,28 @@ public:
         txdatflit = Payload<TxDatID, DATFlit>(dut->rxdatflitpend, dut->rxdatflitv, dut->txdatlcrdv, dut->rxdatflit);
 
 
-        if(txsnpflit != NULL)
+        bool txsnpflit_was_accpeted = (txsnpflit != NULL);
+        if(txsnpflit_was_accpeted)
         {
-            SNPFlit *temp = txsnpflit_queue.front();
-            txsnpflit_queue.pop();
+            SNPFlit *temp = handling_txsnpflit_queue.front();
+            handling_txsnpflit_queue.pop();
+            delete temp;
+            delete txsnpflit;
+        }
+
+        bool txrspflit_was_accepted = (txrspflit != NULL);
+        if(txrspflit_was_accepted)
+        {
+            RSPFlit *temp = handling_txrspflit_queue.front();
+            handling_txrspflit_queue.pop();
             delete temp;
         }
-        if(txrspflit != NULL)
+
+        bool txdatflit_was_accepted = (txdatflit != NULL);
+        if(txdatflit_was_accepted)
         {
-            RSPFlit *temp = txrspflit_queue.front();
-            txrspflit_queue.pop();
-            delete temp;
-        }
-        if(txdatflit != NULL)
-        {
-            DATFlit *temp = txdatflit_queue.front();
-            txdatflit_queue.pop();
+            DATFlit *temp = handling_txdatflit_queue.front();
+            handling_txdatflit_queue.pop();
             delete temp;
         }
     }
@@ -135,10 +141,11 @@ public:
 
         // TxSNP Channel
         dut->rxsnpflitpend = true;
-        if(!txsnpflit_queue.empty())
+        bool has_txsnpflit_payload = !handling_txsnpflit_queue.empty();
+        if(has_txsnpflit_payload)
         {
-            dut->rxsnpflitv = true;
-            SNPFlit *snpflit = txsnpflit_queue.front();
+            dut->rxsnpflitv  = true;
+            SNPFlit *snpflit = handling_txsnpflit_queue.front();
             snpflit->GetFlit(dut->rxsnpflit);
         }
         else
@@ -147,10 +154,11 @@ public:
         }
         // TxRSP Channel
         dut->rxrspflitpend = true;
-        if(!txrspflit_queue.empty())
+        bool has_txrspflit_payload = !handling_txrspflit_queue.empty();
+        if(has_txrspflit_payload)
         {
-            dut->rxrspflitv = true;
-            RSPFlit *rspflit = txrspflit_queue.front();
+            dut->rxrspflitv  = true;
+            RSPFlit *rspflit = handling_txrspflit_queue.front();
             rspflit->GetFlit(dut->rxrspflit);
         }
         else
@@ -159,11 +167,15 @@ public:
         }
         // TxDAT Channel
         dut->rxdatflitpend = true;
-        if(!txdatflit_queue.empty())
+        bool has_txdatflit_payload = !handling_txdatflit_queue.empty();
+        if(has_txdatflit_payload)
         {
-            dut->rxdatflitv = true;
-            DATFlit *datflit = txdatflit_queue.front();
+            dut->rxdatflitv  = true;
+            DATFlit *datflit = handling_txdatflit_queue.front();
             datflit->GetFlit(dut->rxdatflit);
+        }
+        {
+            dut->rxdatflitv = false;
         }
     }
 };
