@@ -65,92 +65,113 @@ public:
 
     void HandleCHIReq(Port *port, AllocCacheLine *alloc_cacheline)
     {
-        bool has_chireq_payload = !alloc_cacheline->chireq_queue.empty();
-        if(has_chireq_payload)
+        // !alloc_cacheline->chireq_queue.empty() ----> it is the mean that has chireq payload in chireq_queue
+        while(!alloc_cacheline->chireq_queue.empty())
         {
-            while(!alloc_cacheline->chireq_queue.empty())
+            REQFlit *reqflit = alloc_cacheline->chireq_queue.front();
+            alloc_cacheline->chireq_queue.pop();
+
+            CHIReqExtension *chireq_extension = new CHIReqExtension();
+            chireq_extension->reqflit = reqflit;
+            chireq_extension->input_txnid = reqflit->txnid;
+            chireq_extension->output_txnid = AllocTxnID();
+
+            uint32_t index = chireq_extension->output_txnid;
+            switch(chireq_extension->reqflit->opcode)
             {
-                REQFlit *reqflit = alloc_cacheline->chireq_queue.front();
-                alloc_cacheline->chireq_queue.pop();
-
-                CHIReqExtension *chireq_extension = new CHIReqExtension();
-                chireq_extension->reqflit = reqflit;
-                chireq_extension->input_txnid = reqflit->txnid;
-                chireq_extension->output_txnid = AllocTxnID();
-
-                uint32_t index = chireq_extension->output_txnid;
-                switch(chireq_extension->reqflit->opcode)
+                case REQChannelOpcode::ReadClean:
+                case REQChannelOpcode::ReadNotSharedDirty:
+                case REQChannelOpcode::ReadShared:
+                case REQChannelOpcode::ReadUnique:
+                case REQChannelOpcode::ReadPreferUnique:
+                case REQChannelOpcode::MakeReadUnique:
                 {
-                    case REQChannelOpcode::ReadClean:
-                    case REQChannelOpcode::ReadNotSharedDirty:
-                    case REQChannelOpcode::ReadShared:
-                    case REQChannelOpcode::ReadUnique:
-                    case REQChannelOpcode::ReadPreferUnique:
-                    case REQChannelOpcode::MakeReadUnique:
-                    {
-                        ReadSent *read_response = new ReadSent();
-                        handle_response_arr[index] = read_response;
+                    ReadSent *read_response = new ReadSent();
+                    handle_response_arr[index] = read_response;
 
-                        ReadAccept *read_accept = new ReadAccept(false);
-                        handle_accept_arr[index] = read_accept;
-                        break;
-                    }                    
-                    case REQChannelOpcode::CleanUnique:
-                    case REQChannelOpcode::MakeUnique:
-                    case REQChannelOpcode::Evict:
-                    case REQChannelOpcode::CleanShared:
-                    case REQChannelOpcode::CleanSharedPersist:
-                    case REQChannelOpcode::CleanInvalid:
-                    case REQChannelOpcode::MakeInvalid:
-                    {
-                        DatalessSent *dataless_response = new DatalessSent();
-                        handle_response_arr[index] = dataless_response;
+                    ReadAccept *read_accept = new ReadAccept(false);
+                    handle_accept_arr[index] = read_accept;
+                    break;
+                }                    
+                case REQChannelOpcode::CleanUnique:
+                case REQChannelOpcode::MakeUnique:
+                case REQChannelOpcode::Evict:
+                case REQChannelOpcode::CleanShared:
+                case REQChannelOpcode::CleanSharedPersist:
+                case REQChannelOpcode::CleanInvalid:
+                case REQChannelOpcode::MakeInvalid:
+                {
+                    DatalessSent *dataless_response = new DatalessSent();
+                    handle_response_arr[index] = dataless_response;
 
-                        DatalessAccept *dataless_accept = new DatalessAccept(false);
-                        handle_accept_arr[index] = dataless_accept;
-                        break;
-                    }
-                    case REQChannelOpcode::WriteNoSnpFull:
-                    case REQChannelOpcode::WriteNoSnpPtl:
-                    case REQChannelOpcode::WriteUniqueFull:
-                    case REQChannelOpcode::WriteUniquePtl:
-                    {
-                        NonCopyBackSent *noncopyback_response = new NonCopyBackSent();
-                        handle_response_arr[index] = noncopyback_response;
+                    DatalessAccept *dataless_accept = new DatalessAccept(false);
+                    handle_accept_arr[index] = dataless_accept;
+                    break;
+                }
+                case REQChannelOpcode::WriteNoSnpFull:
+                case REQChannelOpcode::WriteNoSnpPtl:
+                case REQChannelOpcode::WriteUniqueFull:
+                case REQChannelOpcode::WriteUniquePtl:
+                {
+                    NonCopyBackSent *noncopyback_response = new NonCopyBackSent();
+                    handle_response_arr[index] = noncopyback_response;
 
-                        NonCopyBackAccept *noncopyback_accept = new NonCopyBackAccept(false);
-                        handle_accept_arr[index] = noncopyback_accept;
-                        break;
-                    }
-                    case REQChannelOpcode::WriteBackFull:
-                    case REQChannelOpcode::WriteBackPtl:
-                    case REQChannelOpcode::WriteCleanFull:
-                    case REQChannelOpcode::WriteEvictFull:
-                    {
-                        CopyBackSent *copyback_response = new CopyBackSent();
-                        handle_response_arr[index] = copyback_response;
+                    NonCopyBackAccept *noncopyback_accept = new NonCopyBackAccept(false);
+                    handle_accept_arr[index] = noncopyback_accept;
+                    break;
+                }
+                case REQChannelOpcode::WriteBackFull:
+                case REQChannelOpcode::WriteBackPtl:
+                case REQChannelOpcode::WriteCleanFull:
+                case REQChannelOpcode::WriteEvictFull:
+                {
+                    CopyBackSent *copyback_response = new CopyBackSent();
+                    handle_response_arr[index] = copyback_response;
 
-                        CopyBackAccept *copyback_accept = new CopyBackAccept();
-                        handle_accept_arr[index] = copyback_accept;
-                        break;
-                    }
-                    case REQChannelOpcode::WriteEvictOrEvict:
-                    {
-                        WriteEvictOrEvictSent *req_response = new WriteEvictOrEvictSent();
-                        handle_response_arr[index] = req_response;
+                    CopyBackAccept *copyback_accept = new CopyBackAccept();
+                    handle_accept_arr[index] = copyback_accept;
+                    break;
+                }
+                case REQChannelOpcode::WriteEvictOrEvict:
+                {
+                    WriteEvictOrEvictSent *req_response = new WriteEvictOrEvictSent();
+                    handle_response_arr[index] = req_response;
 
-                        WriteEvictOrEvictAccept *req_accept = new WriteEvictOrEvictAccept();
-                        handle_accept_arr[index] = req_accept;
-                        break;
-                    }
-                    default:
-                    {
-                        assert(0);
-                        break;
-                    }
+                    WriteEvictOrEvictAccept *req_accept = new WriteEvictOrEvictAccept();
+                    handle_accept_arr[index] = req_accept;
+                    break;
+                }
+                default:
+                {
+                    assert(0);
+                    break;
                 }
             }
         }
+
+
+        // handle Response in TxRsp and TxDat Channel
+        uint32_t rand_sel_txrsp = 0;
+        uint32_t rand_sel_txdat = 0;
+        
+        bool has_chireq = !chireq_vec.empty();
+        bool txrspchannel_is_free = !port->TxRspChannelIsBusy();
+        bool txdatchannel_is_free = !port->TxDatChannelIsBusy();
+
+        if(has_chireq & txrspchannel_is_free)
+        {
+            uint32_t txrsp_txnid = chireq_vec[rand_sel_txrsp]->output_txnid;
+            IHandleSent *txrsp_response = handle_response_arr[txrsp_txnid];
+            txrsp_response->SetTxRSPFlit(port->handling_txrspflit_queue);
+        }
+        if(has_chireq & txdatchannel_is_free)
+        {
+            uint32_t txdat_txnid = chireq_vec[rand_sel_txdat]->output_txnid;
+            IHandleSent *txdat_response = handle_response_arr[txdat_txnid];
+            txdat_response->SetTxDATFlit(port->handling_txdatflit_queue);
+        }
+
+
     }
 
 
@@ -192,8 +213,8 @@ public:
                                      (rand_sel + 1);
     }
 
-    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec) {return;}
-    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+    virtual void SetTxRSPFlit(queue<RSPFlit*>& rspflit_queue) {return;}
+    virtual void SetTxDATFlit(queue<DATFlit*>& datflit_queue) {return;}
 };
 
 
@@ -217,7 +238,7 @@ public:
     }
 
 
-    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    virtual void SetTxRSPFlit(queue<RSPFlit*>& rspflit_queue)
     {
         RandSel();
 
@@ -233,13 +254,13 @@ public:
             set_RespSepData = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
         
     }
 
 
-    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec)
+    virtual void SetTxDATFlit(queue<DATFlit*>& datflit_queue)
     {
         RandSel();
 
@@ -255,7 +276,7 @@ public:
             set_CompData = true;
 
             DATFlit* datflit = new DATFlit();
-            datflit_vec.push_back(datflit);
+            datflit_queue.push(datflit);
         }
 
         /*
@@ -269,7 +290,7 @@ public:
         {
             set_DataSepResp = true;
             DATFlit* datflit = new DATFlit();
-            datflit_vec.push_back(datflit);
+            datflit_queue.push(datflit);
         }
     }
 
@@ -290,7 +311,7 @@ public:
     }
 
 
-    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    virtual void SetTxRSPFlit(queue<RSPFlit*>& rspflit_queue)
     {
         RandSel();
         /*
@@ -302,12 +323,12 @@ public:
         {
             set_Comp = true;
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
 
     }
 
-    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+    virtual void SetTxDATFlit(queue<DATFlit*>& datflit_queue) {return;}
 };
 
 
@@ -328,7 +349,7 @@ public:
         rand_sel = 0;
     }
 
-    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    virtual void SetTxRSPFlit(queue<RSPFlit*>& rspflit_queue)
     {
         RandSel();
 
@@ -343,7 +364,7 @@ public:
             set_Comp = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
 
         /*
@@ -357,7 +378,7 @@ public:
             set_DBIDResp = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
 
         /*
@@ -372,12 +393,12 @@ public:
             set_CompDBIDResp = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
 
     }
 
-    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+    virtual void SetTxDATFlit(queue<DATFlit*>& datflit_queue) {return;}
 
 };
 
@@ -388,7 +409,7 @@ class CopyBackSent : public IHandleSent
 public:
     bool set_CompDBIDResp;
 
-    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    virtual void SetTxRSPFlit(queue<RSPFlit*>& rspflit_queue)
     {
         RandSel();
 
@@ -402,11 +423,11 @@ public:
             set_CompDBIDResp = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
     }
 
-    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+    virtual void SetTxDATFlit(queue<DATFlit*>& datflit_queue) {return;}
 };
 
 
@@ -417,7 +438,7 @@ public:
     bool set_Comp;
     bool set_CompDBIDResp;
 
-    virtual void SetTxRSPFlit(vector<RSPFlit*>& rspflit_vec)
+    virtual void SetTxRSPFlit(queue<RSPFlit*>& rspflit_queue)
     {
         RandSel();
 
@@ -432,7 +453,7 @@ public:
             set_Comp = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
 
         /*
@@ -446,11 +467,11 @@ public:
             set_CompDBIDResp = true;
 
             RSPFlit* rspflit = new RSPFlit();
-            rspflit_vec.push_back(rspflit);
+            rspflit_queue.push(rspflit);
         }
     }
 
-    virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
+    virtual void SetTxDATFlit(queue<DATFlit*>& datflit_queue) {return;}
 
 };
 
