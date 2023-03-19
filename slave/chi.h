@@ -470,3 +470,35 @@ namespace RSPChannelOpcode
         CompCMO         =  0x14,
     };
 } // namespace RSPChannelOpcode
+
+
+
+namespace SNPChannelOpcode
+{
+    enum
+    {
+        SnpLCrdReturn         =  0x00,
+        SnpShared             =  0x01,
+        SnpClean              =  0x02,
+        SnpOnce               =  0x03,
+        SnpNotSharedDirty     =  0x04,
+        SnpUniqueStash        =  0x05,
+        SnpMakeInvalidStash   =  0x06,
+        SnpUnique             =  0x07,
+        SnpCleanShared        =  0x08,
+        SnpCleanInvalid       =  0x09,
+        SnpMakeInvalid        =  0x0A,
+        SnpStashUnique        =  0x0B,
+        SnpStashShared        =  0x0C,
+        SnpDVMOp              =  0x0D,
+        SnpQuery              =  0x10,
+        SnpSharedFwd          =  0x11,
+        SnpCleanFwd           =  0x12,
+        SnpOnceFwd            =  0x13,
+        SnpNotSharedDirtyFwd  =  0x14,
+        SnpPreferUnique       =  0x15,
+        SnpPreferUniqueFwd    =  0x16,
+        SnpUniqueFwd          =  0x17,
+    };
+} // namespace SNPChannelOpcode
+
