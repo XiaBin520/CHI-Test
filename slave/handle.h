@@ -105,7 +105,7 @@ public:
 
 
 
-class IHandleSet
+class IHandleSent
 {
 public:
     bool    set_RetryAck;
@@ -124,7 +124,7 @@ public:
 
 
 
-class ReadSet : public IHandleSet
+class ReadSent : public IHandleSent
 {
 public:
     bool set_CompData;
@@ -204,7 +204,7 @@ public:
 
 
 
-class DatalessSet : public IHandleSet
+class DatalessSent : public IHandleSent
 {
 public:
     bool set_Comp;
@@ -238,7 +238,7 @@ public:
 
 
 
-class NonCopyBackSet : public IHandleSet
+class NonCopyBackSent : public IHandleSent
 {
 public:
     bool set_Comp;
@@ -309,7 +309,7 @@ public:
 
 
 
-class CopyBackSet : public IHandleSet
+class CopyBackSent : public IHandleSent
 {
 public:
     bool set_CompDBIDResp;
@@ -337,7 +337,7 @@ public:
 
 
 
-class WriteEvictOrEvictSet : public IHandleSet
+class WriteEvictOrEvictSent : public IHandleSent
 {
 public:
     bool set_Comp;
