@@ -175,7 +175,47 @@ public:
     }
 
 
+    void HandleMonitorReq(Port *port)
+    {
+        RSPFlit *rxrspflit = port->rxrspflit;
+        bool has_rxrsp_payload = (rxrspflit != NULL);
+        if(has_rxrsp_payload)
+        {
+            uint32_t rxrsp_txnid = rxrspflit->txnid;
+            IHandleAccept *temp_rxrsp = handle_accept_arr[rxrsp_txnid];
+            temp_rxrsp->GotRxRspFlit(rxrspflit);
+        }
 
+
+        DATFlit *rxdatflit = port->rxdatflit;
+        bool has_rxdat_payload = (rxdatflit != NULL);
+        if(has_rxdat_payload)
+        {
+            uint32_t rxdat_txnid = rxdatflit->txnid;
+            IHandleAccept *temp_rxdat = handle_accept_arr[rxdat_txnid];
+            temp_rxdat->GotRxDatFlit(rxdatflit);
+        }
+
+
+        RSPFlit *txrspflit = port->txrspflit;
+        bool has_txrsp_payload = (txrspflit != NULL);
+        if(has_txrsp_payload)
+        {
+            uint32_t txrsp_dbid = txrspflit->dbid;
+            IHandleAccept *temp_txrsp = handle_accept_arr[txrsp_dbid];
+            temp_txrsp->GotTxRspFlit(txrspflit);
+        }
+
+
+        DATFlit *txdatflit = port->txdatflit;
+        bool has_txdat_payload = (txdatflit != NULL);
+        if(has_txdat_payload)
+        {
+            uint32_t txdat_dbid = txdatflit->dbid;
+            IHandleAccept *temp_txdat = handle_accept_arr[txdat_dbid];
+            temp_txdat->GotTxDatFlit(txdatflit);
+        }
+    }
 
 
 
