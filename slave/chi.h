@@ -523,3 +523,37 @@ namespace DATChannelOpcode
 
 } // namespace DATChannelOpcode
 
+
+
+
+
+
+namespace DataID
+{
+    enum
+    {
+        // Data Width  = 128-bit
+        Data_127_to_000 = 0x0,
+        Data_255_to_128 = 0x1,
+        Data_383_to_256 = 0x2,
+        Data_511_to_384 = 0x3,
+
+        Data_255_to_000 = 0x0,
+        Data_511_to_256 = 0x2,
+
+        Data_511_to_000 = 0x0, 
+    };
+} // namespace DataID
+
+
+namespace CCID
+{
+    enum
+    {
+        Data_127_to_000 = 0x0,
+        Data_255_to_128 = 0x1,
+        Data_383_to_256 = 0x2,
+        Data_511_to_384 = 0x3,
+    };
+} // namespace CCID
+
