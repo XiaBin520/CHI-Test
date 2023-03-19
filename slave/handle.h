@@ -32,6 +32,8 @@ public:
 
     IHandleAccept *handle_accept_arr[1024*4];
 
+    IHandleSent *handle_response_arr[1024*4];
+
     uint32_t AllocTxnID()
     {
         uint32_t last_txnid = output_txnid;
@@ -75,6 +77,31 @@ public:
                 chireq_extension->reqflit = reqflit;
                 chireq_extension->input_txnid = reqflit->txnid;
                 chireq_extension->output_txnid = AllocTxnID();
+
+                uint32_t index = chireq_extension->output_txnid;
+                switch(chireq_extension->reqflit->opcode)
+                {
+                    case REQChannelOpcode::ReadClean:
+                    case REQChannelOpcode::ReadNotSharedDirty:
+                    case REQChannelOpcode::ReadShared:
+                    case REQChannelOpcode::ReadUnique:
+                    case REQChannelOpcode::ReadPreferUnique:
+                    case REQChannelOpcode::MakeReadUnique:
+                    {
+
+                        ReadSent *handle_read_response = new ReadSent();
+                        handle_response_arr[index] = handle_read_response;
+
+                        ReadAccept *handle_read_accept = new ReadAccept(false);
+                        handle_accept_arr[index] = handle_read_accept;
+                        break;
+                    }
+                    default:
+                    {
+                        assert(0);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -133,7 +160,7 @@ public:
     // bool set_ReadReceipt; // 暂时用不到
 
 
-    ReadSet()
+    ReadSent()
     {
         set_CompData    = false;
         set_RespSepData = false;
@@ -209,7 +236,7 @@ class DatalessSent : public IHandleSent
 public:
     bool set_Comp;
 
-    DatalessSet()
+    DatalessSent()
     {
         set_Comp = false;
         rand_sel = 0;
@@ -245,7 +272,7 @@ public:
     bool set_DBIDResp;
     bool set_CompDBIDResp;
 
-    NonCopyBackSet()
+    NonCopyBackSent()
     {
         set_Comp         = false;
         set_DBIDResp     = false;
@@ -379,6 +406,7 @@ public:
     virtual void SetTxDATFlit(vector<DATFlit*>& datflit_vec) {return;}
 
 };
+
 
 
 

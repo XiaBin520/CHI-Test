@@ -1,5 +1,7 @@
 #include<stdint.h>
 #include<queue>
+#include<vector>
+#include<assert.h>
 
 using namespace std;
 
