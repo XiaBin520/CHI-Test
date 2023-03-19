@@ -30,6 +30,8 @@ public:
 
     uint32_t output_txnid;
 
+    IHandleAccept *handle_accept_arr[1024*4];
+
     uint32_t AllocTxnID()
     {
         uint32_t last_txnid = output_txnid;
@@ -51,8 +53,11 @@ public:
 
             SNPFlit *txsnpflit = SetTxSNPFlit(lsreq_extension);
             port->handling_txsnpflit_queue.push(txsnpflit);
+
+            SnoopAccept *handle_snp_accept = new SnoopAccept();
+            uint32_t index = lsreq_extension->output_txnid;
+            handle_accept_arr[index] = handle_snp_accept;
         }
-        // Create HandleGot
     }
 
 
