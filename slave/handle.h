@@ -88,12 +88,59 @@ public:
                     case REQChannelOpcode::ReadPreferUnique:
                     case REQChannelOpcode::MakeReadUnique:
                     {
+                        ReadSent *read_response = new ReadSent();
+                        handle_response_arr[index] = read_response;
 
-                        ReadSent *handle_read_response = new ReadSent();
-                        handle_response_arr[index] = handle_read_response;
+                        ReadAccept *read_accept = new ReadAccept(false);
+                        handle_accept_arr[index] = read_accept;
+                        break;
+                    }                    
+                    case REQChannelOpcode::CleanUnique:
+                    case REQChannelOpcode::MakeUnique:
+                    case REQChannelOpcode::Evict:
+                    case REQChannelOpcode::CleanShared:
+                    case REQChannelOpcode::CleanSharedPersist:
+                    case REQChannelOpcode::CleanInvalid:
+                    case REQChannelOpcode::MakeInvalid:
+                    {
+                        DatalessSent *dataless_response = new DatalessSent();
+                        handle_response_arr[index] = dataless_response;
 
-                        ReadAccept *handle_read_accept = new ReadAccept(false);
-                        handle_accept_arr[index] = handle_read_accept;
+                        DatalessAccept *dataless_accept = new DatalessAccept(false);
+                        handle_accept_arr[index] = dataless_accept;
+                        break;
+                    }
+                    case REQChannelOpcode::WriteNoSnpFull:
+                    case REQChannelOpcode::WriteNoSnpPtl:
+                    case REQChannelOpcode::WriteUniqueFull:
+                    case REQChannelOpcode::WriteUniquePtl:
+                    {
+                        NonCopyBackSent *noncopyback_response = new NonCopyBackSent();
+                        handle_response_arr[index] = noncopyback_response;
+
+                        NonCopyBackAccept *noncopyback_accept = new NonCopyBackAccept(false);
+                        handle_accept_arr[index] = noncopyback_accept;
+                        break;
+                    }
+                    case REQChannelOpcode::WriteBackFull:
+                    case REQChannelOpcode::WriteBackPtl:
+                    case REQChannelOpcode::WriteCleanFull:
+                    case REQChannelOpcode::WriteEvictFull:
+                    {
+                        CopyBackSent *copyback_response = new CopyBackSent();
+                        handle_response_arr[index] = copyback_response;
+
+                        CopyBackAccept *copyback_accept = new CopyBackAccept();
+                        handle_accept_arr[index] = copyback_accept;
+                        break;
+                    }
+                    case REQChannelOpcode::WriteEvictOrEvict:
+                    {
+                        WriteEvictOrEvictSent *req_response = new WriteEvictOrEvictSent();
+                        handle_response_arr[index] = req_response;
+
+                        WriteEvictOrEvictAccept *req_accept = new WriteEvictOrEvictAccept();
+                        handle_accept_arr[index] = req_accept;
                         break;
                     }
                     default:
