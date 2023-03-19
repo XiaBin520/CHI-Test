@@ -354,3 +354,93 @@ public:
         }
     }
 };
+
+
+
+
+
+namespace REQChannelOpcode
+{
+    enum
+    {
+        ReqLCrdReturn            = 0x00,
+        ReadShared               = 0x01,
+        ReadClean                = 0x02,
+        ReadOnce                 = 0x03,
+        ReadNoSnp                = 0x04,
+        PCrdReturn               = 0x05,
+        ReadUnique               = 0x07,
+        CleanShared              = 0x08,
+        CleanInvalid             = 0x09,
+        MakeInvalid              = 0x0A,
+        CleanUnique              = 0x0B,
+        MakeUnique               = 0x0C,
+        Evict                    = 0x0D,
+
+        ReadNoSnpSep             = 0x11,
+        CleanSharedPersistSep    = 0x13,
+        DVMOp                    = 0x14,
+        WriteEvictFull           = 0x15,
+        WriteCleanFull           = 0x17,
+        WriteUniquePtl           = 0x18,
+        WriteUniqueFull          = 0x19,
+        WriteBackPtl             = 0x1A,
+        WriteBackFull            = 0x1B,
+        WriteNoSnpPtl            = 0x1C,
+        WriteNoSnpFull           = 0x1D,
+
+        WriteUniqueFullStash     = 0x20,
+        WriteUniquePtlStash      = 0x21,
+        StashOnceShared          = 0x22,
+        StashOnceUnique          = 0x23,
+        ReadOnceCleanInvalid     = 0x24,
+        ReadOnceMakeInvalid      = 0x25,
+        ReadNotSharedDirty       = 0x26,
+        CleanSharedPersist       = 0x27,
+        AtomicStore_ADD          = 0x28,
+        AtomicStore_CLR          = 0x29,
+        AtomicStore_EOR          = 0x2A,
+        AtomicStore_SET          = 0x2B,
+        AtomicStore_SMAX         = 0x2C,
+        AtomicStore_SMIN         = 0x2D,
+        AtomicStore_UMAX         = 0x2E,
+        AtomicStore_UMIN         = 0x2F,
+
+        AtomicLoad_ADD           = 0x30,
+        AtomicLoad_CLR           = 0x31,
+        AtomicLoad_EOR           = 0x32,
+        AtomicLoad_SET           = 0x33,
+        AtomicLoad_SMAX          = 0x34,
+        AtomicLoad_SMIN          = 0x35,
+        AtomicLoad_UMAX          = 0x36,
+        AtomicLoad_UMIN          = 0x37,
+        AtomicSwap               = 0x38,
+        AtomicCompare            = 0x39,
+        PrefetchTgt              = 0x3A,
+
+        MakeReadUnique                   = 0x41,
+        WriteEvictOrEvict                = 0x42,
+        WriteUniqueZero                  = 0x43,
+        WriteNoSnpZero                   = 0x44,
+        StashOnceSepShared               = 0x47,
+        StashOnceSepUnique               = 0x48,
+        ReadPreferUnique                 = 0x4C,
+
+        WriteNoSnpFullCleanSh            = 0x50,
+        WriteNoSnpFullCleanInv           = 0x51,
+        WriteNoSnpFullCleanShPerSep      = 0x52,
+        WriteUniqueFullCleanSh           = 0x54,
+        WriteBackFullCleanSh             = 0x58,
+        WriteBackFullCleanInv            = 0x59,
+        WriteBackFullCleanShPerSep       = 0x5A,
+        WriteCleanFullCleanSh            = 0x5C,
+        WriteCleanFullCleanShPerSep      = 0x5E,
+
+        WriteNoSnpPtlCleanSh             = 0x60,
+        WriteNoSnpPtlCleanInv            = 0x61,
+        WriteNoSnpPtlCleanShPerSep       = 0x62,
+        WriteUniquePtlCleanSh            = 0x64,
+        WriteUniquePtlCleanShPerSep      = 0x66,
+    };
+} // namespace REQChannelOpcode
+
