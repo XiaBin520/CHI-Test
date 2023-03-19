@@ -502,3 +502,24 @@ namespace SNPChannelOpcode
     };
 } // namespace SNPChannelOpcode
 
+
+
+
+namespace DATChannelOpcode
+{
+    enum
+    {
+        DataLCrdReturn     =  0x0,
+        SnpRespData        =  0x1,
+        CopyBackWrData     =  0x2,
+        NonCopyBackWrData  =  0x3,
+        CompData           =  0x4,
+        SnpRespDataPtl     =  0x5,
+        SnpRespDataFwded   =  0x6,
+        WriteDataCancel    =  0x7,
+        DataSepResp        =  0xB,
+        NCBWrDataCompAck   =  0xC,
+    };
+
+} // namespace DATChannelOpcode
+
