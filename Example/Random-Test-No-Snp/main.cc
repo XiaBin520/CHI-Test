@@ -9,11 +9,14 @@ int main()
     CHI_HNF::LinkLayer *hn_layer = new CHI_HNF::LinkLayer();
 
 
-    queue<CHI_RNF::ACCFLIT*> acc_flit_queue;
     GoldenMem *golden_mem = new GoldenMem();
     uint8_t mem_data[512][64];
 
+
     const uint64_t CLK_COUNT = 100 * 10000;
+
+
+
 
     uint64_t all_gen_num = 0; // the number of all generate acc request
     uint64_t all_del_num = 0; // the number of all finish acc request
