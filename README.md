@@ -22,7 +22,9 @@ CHI-Test 测试框架的大致结构如下图所示：
 * ICN 可以接收和响应 RN-F 发来的 CHI 请求
 
 总结：
+
 通过设置访问序列 Access Sequence 间接的控制 RN-F 产生 CHI REQ 请求；
+
 通过设置 Snoop 访问序列 Snoop Sequence 间接地控制 ICN 产生 CHI SNP 请求；
 
 
@@ -31,6 +33,7 @@ CHI-Test 测试框架的大致结构如下图所示：
 # CHI-Test 测试举例
 
 (1) 访问序列举例
+
 假如访问序列是读操作 Read，Read 的目的是读取数据。
 Read 输入到 RN-F 中后，RN-F 需要检查 CacheLine 的状态。
 如果 CacheLine 的状态为 Invalid，发生 Cache Miss，那么 RN-F 会向 ICN 发送 CHI 请求，如 ReadClean 请求，从 ICN 中读取数据。
@@ -38,6 +41,7 @@ Read 输入到 RN-F 中后，RN-F 需要检查 CacheLine 的状态。
 发生 Cache Hit 后，读取 RN-F 中 CacheLine 的数据，然后通知访问序列 Read 操作完成。
 
 (2) Snoop 访问序列举例
+
 假如 Snoop 访问序列是 Snoop-Write 操作，Snoop-Write 的目的是将数据写入到 ICN Main Memory 中。
 Snoop-Write 输入到 ICN 中后，ICN 会通过 CHI 总线发送 Snoop 请求，如 SnpMakeInvalid 和 SnpCleanInvalid 请求，从 RN-F 中取回数据。然后再将 Snoop-Write 操作写的数据写入到 ICN Main Memory 中。
 
